@@ -11,7 +11,7 @@ contains() {
 if contains $ACTIVE_WIDGETS "batteryWidget"; then
     BATTERY_PERCENTAGE=$(pmset -g batt | egrep '([0-9]+\%).*' -o --colour=auto | cut -f1 -d'%')
     BATTERY_STATUS=$(pmset -g batt | grep "'.*'" | sed "s/'//g" | cut -c 18-19)
-    
+
     CAFFEINATE=caffeinate
     CAFFEINATE_PID=""
   if pgrep $CAFFEINATE 2>&1 >/dev/null; then
@@ -27,8 +27,8 @@ if contains $ACTIVE_WIDGETS "batteryWidget"; then
 fi
 
 if contains $ACTIVE_WIDGETS "wifiWidget"; then
-  WIFI_STATUS=$(ifconfig en0 | grep status | cut -c 10-)
-  WIFI_SSID=$(networksetup -getairportnetwork en0 | cut -c 24-)
+  WIFI_STATUS=$(ifconfig en1 | grep status | cut -c 10-)
+  WIFI_SSID=$(networksetup -getairportnetwork en1 | cut -c 24-)
 fi
 
 if contains $ACTIVE_WIDGETS "soundWidget"; then
@@ -76,6 +76,11 @@ if contains $ACTIVE_WIDGETS "browserTrackWidget"; then
   fi
 fi
 
+LOAD=$(sysctl -n vm.loadavg)
+
+IFSTAT_UP=$(/usr/local/bin/ifstat -n -z -S 1 1 | awk 'FNR == 3 {print $3}')
+IFSTAT_DOWN=$(/usr/local/bin/ifstat -n -z -S 1 1 | awk 'FNR == 3 {print $2}')
+
 echo $(cat <<-EOF
   {
     "battery": {
@@ -110,7 +115,12 @@ echo $(cat <<-EOF
       "trackName": "$MUSIC_TRACK_NAME",
       "artistName": "$MUSIC_ARTIST_NAME"
     },
-    "browserTrack": $BROWSER_TRACK
+    "browserTrack": $BROWSER_TRACK,
+    "load": "$LOAD",
+    "ifstat": {
+      "up": "$IFSTAT_UP",
+      "down": "$IFSTAT_DOWN"
+    }
   }
 EOF
 )

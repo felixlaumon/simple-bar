@@ -9,6 +9,8 @@ import Spotify from './lib/components/Spotify.jsx'
 import Music from './lib/components/Music.jsx'
 import BrowserTrack from './lib/components/BrowserTrack.jsx'
 import Error from './lib/components/Error.jsx'
+import Ifstat from './lib/components/Ifstat.jsx'
+import Load from './lib/components/Load.jsx'
 
 import { parseJson, getTheme, getActiveWidgets } from './lib/utils.js'
 import { getSettings } from './lib/settings.js'
@@ -58,7 +60,7 @@ const render = ({ output, error }) => {
   const data = parseJson(output)
   if (!data) return <Error widget="data" type="noData" />
 
-  const { battery, wifi, keyboard, mic, sound, spotify, music, browserTrack } = data
+  const { battery, wifi, keyboard, mic, sound, spotify, music, browserTrack, load, ifstat } = data
   return (
     <div className="simple-bar simple-bar--data">
       <BrowserTrack output={{ ...browserTrack, spotifyStatus: spotify.spotifyIsRunning }} />
@@ -67,7 +69,9 @@ const render = ({ output, error }) => {
       <Battery output={battery} />
       <Mic output={mic} />
       <Sound output={sound} />
+      <Load output={load} />
       <Wifi output={wifi} />
+      <Ifstat output={ifstat} />
       <Keyboard output={keyboard} />
       <DateDisplay />
       <Time />
